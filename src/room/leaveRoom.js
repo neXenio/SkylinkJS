@@ -106,6 +106,7 @@ const sendByeOrDisconnectSocket = state => new Promise((resolve) => {
 const stopStreams = (state) => {
   const { room, streams } = state;
 
+  // TODO fix not returned promise
   if (streams.userMedia) {
     stopStreamHelpers.prepStopStreams(room.id, null, true);
   }
@@ -136,7 +137,7 @@ export const leaveRoom = roomState => new Promise((resolve, reject) => {
 
     if (isEmptyArray(peerIds)) {
       logger.log.DEBUG([room.roomName, null, null, LEAVE_ROOM.NO_PEERS]);
-      stopStreams(roomState);
+      stopStreams(roomState).catch(reject);
       sendByeOrDisconnectSocket(roomState)
         .then((removedState) => {
           logger.log.INFO([room.roomName, null, null, LEAVE_ROOM.REMOVE_STATE.SUCCESS]);
@@ -148,7 +149,7 @@ export const leaveRoom = roomState => new Promise((resolve, reject) => {
           }));
           clearRoomState(removedState.room.id);
           resolve(removedState.room.roomName);
-        });
+        }).catch(reject);
     } else {
       const peerLeftPromises = [];
 
@@ -171,7 +172,7 @@ export const leaveRoom = roomState => new Promise((resolve, reject) => {
           }));
           clearRoomState(removedState.room.id);
           resolve(removedState.room.roomName);
-        });
+        }).catch(reject);
     }
   } catch (error) {
     logger.log.ERROR([room.roomName, null, null, LEAVE_ROOM.ERROR], error);
