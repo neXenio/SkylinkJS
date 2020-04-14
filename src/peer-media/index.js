@@ -49,6 +49,9 @@ class PeerMedia {
    */
   static isVideoScreenTrack(state, peerId, transceiverMid) {
     const { peerMedias } = state;
+    if (!peerMedias[peerId]) {
+      return false;
+    }
     const mediaInfos = Object.values(peerMedias[peerId]);
 
     for (let m = 0; m < mediaInfos.length; m += 1) {

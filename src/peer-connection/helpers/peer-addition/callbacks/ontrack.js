@@ -41,7 +41,10 @@ const ontrack = (RTCPeerConnection, targetMid, currentRoomState, rtcTrackEvent) 
   const { receiver } = rtcTrackEvent;
   const { AdapterJS } = window;
   const stream = rtcTrackEvent.streams[0];
-
+  if (!stream) {
+    logger.log.WARN('ignore on empty stream', rtcTrackEvent);
+    return null;
+  }
   // eslint-disable-next-line prefer-const
   let { transceiver, track } = rtcTrackEvent;
   let peerId = targetMid;
